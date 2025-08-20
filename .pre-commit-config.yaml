@@ -2,7 +2,7 @@ repos:
   - repo: local
     hooks:
       - id: lint-staged
-        name: Run lint-staged in frontend folder
+        name: Runing; lint-staged in frontend folder
         entry: sh -c "cd frontend && npm exec lint-staged"
         language: system
         files: ^frontend/
