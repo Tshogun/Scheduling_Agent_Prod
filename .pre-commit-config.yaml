@@ -3,8 +3,7 @@ repos:
     hooks:
       - id: lint-staged
         name: Run lint-staged in frontend folder
-        entry: npm exec lint-staged
+        entry: npm exec -- node -e "console.log('cwd:', process.cwd())" && npm exec lint-staged
         language: node
         pass_filenames: false
-        # Run only on files inside frontend
         files: ^frontend/
