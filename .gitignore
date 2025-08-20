@@ -1,0 +1,76 @@
+# === Node / Nuxt ===
+node_modules/
+.nuxt/
+dist/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Nuxt static hosting output
+.output/
+.cache/
+*.local
+.env
+.env.*
+
+# Nuxt generate output
+public/
+
+# Nuxt 3 nitro
+.nitro/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+*.log
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Python environment files
+pip-log.txt
+pip-delete-this-directory.txt
+*.pyenv
+
+# Python notebooks
+.ipynb_checkpoints/
+
+# Django / Flask / FastAPI
+instance/
+.mypy_cache/
+.pytest_cache/
+.dmypy.json
+coverage/
+htmlcov/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.sqlite3
+*.db
+*.log
+*.bak
+*.tmp
+    
