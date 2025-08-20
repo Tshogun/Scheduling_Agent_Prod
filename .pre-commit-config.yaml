@@ -2,8 +2,8 @@ repos:
   - repo: local
     hooks:
       - id: lint-staged
-        name: Run lint-staged in frontend folder
-        entry: npm exec -- node -e "console.log('cwd:', process.cwd())" && npm exec lint-staged
-        language: node
+        name: Run lint-staged script on Windows
+        entry: run-lint-staged.bat
+        language: system
         pass_filenames: false
         files: ^frontend/
