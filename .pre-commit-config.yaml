@@ -3,6 +3,6 @@ repos:
     hooks:
       - id: lint-staged
         name: Run lint-staged on frontend files
-        entry: npx lint-staged
+        entry: npm exec lint-staged
         language: node
         files: ^frontend/
