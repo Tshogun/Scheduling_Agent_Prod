@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: lint-staged
         name: Run lint-staged script on Windows
-        entry: ./run-lint-staged.bat
+        entry: ./.run-lint-staged.bat
         language: system
         pass_filenames: false
         files: ^frontend/
