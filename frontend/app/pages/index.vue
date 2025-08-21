@@ -158,13 +158,13 @@ function getShiftClass(employeeId, date) {
   const shiftType = shift.shift_type?.toLowerCase() || "";
 
   if (shiftType.includes("night")) {
-    return `${baseClasses} bg-purple-700`;
+    return `${baseClasses} bg-purple-900`;
   }
   else if (shiftType.includes("morning") || shiftType.includes("early")) {
-    return `${baseClasses} bg-purple-500`;
+    return `${baseClasses} bg-purple-700`;
   }
   else if (shiftType.includes("evening") || shiftType.includes("late")) {
-    return `${baseClasses} bg-purple-600`;
+    return `${baseClasses} bg-purple-500`;
   }
   else if (shiftType.includes("cleaning")) {
     return `${baseClasses} bg-purple-400`;
@@ -184,16 +184,16 @@ function getShiftStyle(employeeId, date) {
 
   // Position based on time and shift type
   if (shiftType.includes("night") || time.startsWith("00:")) {
-    return { left: "0%", width: "50%" }; // Night shift covers 00:00 to 12:00
+    return { left: "0%", width: "33.33%" }; // 00:00 to 08:00
   }
   else if (shiftType.includes("morning") || shiftType.includes("early")) {
-    return { left: "0%", width: "50%" }; // Morning shift covers 00:00 to 12:00
+    return { left: "33.33%", width: "33.33%" }; // 08:00 to 16:00
   }
   else if (shiftType.includes("evening") || shiftType.includes("late")) {
-    return { left: "50%", width: "50%" }; // Evening shift covers 12:00 to 24:00
+    return { left: "66.66%", width: "33.33%" }; // 16:00 to 00:00
   }
   else if (shiftType.includes("cleaning")) {
-    return { left: "25%", width: "50%" }; // Cleaning covers 06:00 to 18:00
+    return { left: "25%", width: "50%" }; // 06:00 to 18:00
   }
   else {
     return { left: "0%", width: "100%" }; // Full day if unknown
@@ -245,16 +245,6 @@ onMounted(() => {
         <div class="flex items-center bg-purple-600 text-white px-4 py-2 rounded-full font-medium">
           <svg
             class="w-5 h-5 mr-2"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          EMPLOYEES
-        </div>
-        <div class="flex items-center text-purple-400 font-medium">
-          <svg
-            class="w-5 h-5 mr-2"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -266,7 +256,17 @@ onMounted(() => {
             />
             <polyline points="12,6 12,12 16,14" />
           </svg>
-          SHIFT
+          SCHEDULE SHIFT
+        </div>
+        <div class="flex items-center text-purple-400 font-medium">
+          <svg
+            class="w-5 h-5 mr-2"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          EMPLOYEES
         </div>
       </div>
 
@@ -278,8 +278,10 @@ onMounted(() => {
             <!-- Fixed Header Row -->
             <div class="flex border-b border-gray-200 bg-white sticky top-0 z-20">
               <!-- Fixed Employee Header -->
-              <div class="flex-shrink-0 w-48 p-4 border-r border-gray-200 bg-white sticky left-0 z-30 font-semibold">
-                Employee
+              <div
+                class="flex flex-shrink-0 w-48 p-4 border-r border-gray-200 bg-white justify-center items-center sticky left-0 z-30 font-semibold"
+              >
+                Employees
               </div>
 
               <!-- Scrollable Date Headers -->
@@ -330,7 +332,10 @@ onMounted(() => {
               <!-- Fixed Employee Info -->
               <div class="flex-shrink-0 w-48 p-4 border-r border-gray-200 bg-white sticky left-0 z-10">
                 <div class="flex items-center">
-                  <div :class="getEmployeeInitialsClass(employee.employee_id)" class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mr-3">
+                  <div
+                    :class="getEmployeeInitialsClass(employee.employee_id)"
+                    class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm mr-3"
+                  >
                     {{ employee.employee_initials }}
                   </div>
                   <span class="font-medium text-gray-900">{{ employee.employee_name }}</span>
@@ -362,10 +367,7 @@ onMounted(() => {
                     </div>
 
                     <!-- Time-based shift block with preference indicators -->
-                    <div
-                      v-if="getEmployeeShift(employee.employee_id, date)"
-                      class="relative h-full"
-                    >
+                    <div v-if="getEmployeeShift(employee.employee_id, date)" class="relative h-full">
                       <!-- Main shift block -->
                       <div
                         :class="getShiftClass(employee.employee_id, date)"
