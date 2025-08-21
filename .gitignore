@@ -15,9 +15,6 @@ yarn-error.log*
 .env
 .env.*
 
-# Nuxt generate output
-public/
-
 # Nuxt 3 nitro
 .nitro/
 
