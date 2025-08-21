@@ -11,24 +11,15 @@ const error = ref(null);
 async function loadCsvData() {
   try {
     loading.value = true;
-    console.log("Starting to load CSV files...");
-
     // Load shift data
-    console.log("Fetching shifts.csv...");
     const shiftResponse = await fetch("/data/shifts.csv");
-    console.log("Shift response status:", shiftResponse.status, shiftResponse.statusText);
-
     if (!shiftResponse.ok) {
       throw new Error(`Failed to load shifts.csv: ${shiftResponse.status} ${shiftResponse.statusText}`);
     }
 
     const shiftCsvText = await shiftResponse.text();
-    console.log("Raw shift CSV text:", `${shiftCsvText.substring(0, 200)}...`);
-
     const shiftLines = shiftCsvText.trim().split("\n");
     const shiftHeaders = shiftLines[0].split(",").map(h => h.trim());
-    console.log("Shift headers:", shiftHeaders);
-
     const shiftData = shiftLines.slice(1).map((line) => {
       const values = line.split(",");
       const row = {};
@@ -39,24 +30,16 @@ async function loadCsvData() {
     });
 
     csvData.value = shiftData;
-    console.log("Parsed shift data:", shiftData);
-
     // Load employee data
-    console.log("Fetching employees.csv...");
     const employeeResponse = await fetch("/data/employees.csv");
-    console.log("Employee response status:", employeeResponse.status, employeeResponse.statusText);
 
     if (!employeeResponse.ok) {
       throw new Error(`Failed to load employees.csv: ${employeeResponse.status} ${employeeResponse.statusText}`);
     }
 
     const employeeCsvText = await employeeResponse.text();
-    console.log("Raw employee CSV text:", `${employeeCsvText.substring(0, 200)}...`);
-
     const employeeLines = employeeCsvText.trim().split("\n");
     const employeeHeaders = employeeLines[0].split(",").map(h => h.trim());
-    console.log("Employee headers:", employeeHeaders);
-
     const empData = employeeLines.slice(1).map((line) => {
       const values = line.split(",");
       const row = {};
@@ -67,13 +50,6 @@ async function loadCsvData() {
     });
 
     employeeData.value = empData;
-    console.log("Parsed employee data:", empData);
-    console.log("Unique dates from shifts:", [...new Set(shiftData.map(row => row.date))]);
-    console.log("Employee preferences:", empData.map(emp => ({
-      id: emp.employee_id,
-      preferred: emp.preferred_shift_date,
-      unavailable: emp.unavailable_shift_date,
-    })));
   }
   catch (err) {
     error.value = `Failed to load CSV data: ${err.message}`;
@@ -118,14 +94,12 @@ function getEmployeePreferences(employeeId) {
 function isPreferred(employeeId, date) {
   const preferences = getEmployeePreferences(employeeId);
   const preferredDate = preferences.preferred_shift_date;
-  console.log(`Checking preferred for ${employeeId} on ${date}, preferred date: ${preferredDate}`);
   return preferredDate === date;
 }
 
 function isUnavailable(employeeId, date) {
   const preferences = getEmployeePreferences(employeeId);
   const unavailableDate = preferences.unavailable_shift_date;
-  console.log(`Checking unavailable for ${employeeId} on ${date}, unavailable date: ${unavailableDate}`);
   return unavailableDate === date;
 }
 
