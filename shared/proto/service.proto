@@ -1,0 +1,103 @@
+// -----------------------------------------------------------------------------
+// orchestrator.proto
+//
+// This Protocol Buffers definition describes the gRPC API for the AI Orchestrator
+// service, which handles:
+//
+//   1. Health checks (`Ping`)
+//   2. LLM-based text generation/completion (`GetCompletion`)
+//   3. Optimization problem solving using OR-Tools (`SolveOptimization`)
+//   4. Asynchronous job status tracking (`GetJobStatus`)
+//
+// The service is designed to integrate components like:
+//   - Large Language Models (e.g., GPT, Claude)
+//   - Mathematical optimization engines (e.g., Google OR-Tools)
+//   - Asynchronous workers (e.g., via RabbitMQ)
+//
+// Messages are structured as requests and responses for each RPC endpoint.
+// Optimization results are processed asynchronously and identified by a `job_id`.
+//
+// This file is used to generate gRPC clients and servers in multiple languages
+// (e.g., Go, Python, Node.js) and facilitates communication between frontend,
+// backend, and worker services in a distributed AI system.
+//
+// Generated code can be used for:
+//   - Backend service (Go/Python) implementing the business logic
+//   - Frontend/microservices making requests to the orchestrator
+//
+// For Go projects, the generated code will be placed in the
+// "https://github.com/Tshogun/Scheduling_Agent_Prod/shared/proto" package.
+// -----------------------------------------------------------------------------
+
+syntax = "proto3";
+
+package orchestrator;
+
+option go_package = "https://github.com/Tshogun/Scheduling_Agent_Prod/shared/proto";
+
+// AI Service for LLM and OR-Tools operations
+service AIService {
+  // Simple ping for health check
+  rpc Ping(PingRequest) returns (PingResponse);
+  
+  // LLM completion
+  rpc GetCompletion(CompletionRequest) returns (CompletionResponse);
+  
+  // OR-Tools solver (async via RabbitMQ recommended)
+  rpc SolveOptimization(OptimizationRequest) returns (OptimizationResponse);
+  
+  // Get solver job status
+  rpc GetJobStatus(JobStatusRequest) returns (JobStatusResponse);
+}
+
+// Basic messages
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string message = 1;
+  int64 timestamp = 2;
+}
+
+// LLM messages
+message CompletionRequest {
+  string prompt = 1;
+  string model = 2;
+  int32 max_tokens = 3;
+}
+
+message CompletionResponse {
+  string completion = 1;
+  int32 tokens_used = 2;
+  string model = 3;
+}
+
+// Optimization messages
+message OptimizationRequest {
+  string problem_type = 1;
+  string constraints_json = 2;
+  string objectives_json = 3;
+  int32 timeout_seconds = 4;
+}
+
+message OptimizationResponse {
+  string job_id = 1;
+  string status = 2;  // "queued", "running", "completed", "failed"
+  string result_json = 3;
+  string error_message = 4;
+}
+
+// Job status messages
+message JobStatusRequest {
+  string job_id = 1;
+}
+
+message JobStatusResponse {
+  string job_id = 1;
+  string status = 2;
+  string result_json = 3;
+  string error_message = 4;
+  int64 created_at = 5;
+  int64 completed_at = 6;
+}

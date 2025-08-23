@@ -24,4 +24,10 @@ export default defineNuxtConfig({
       standalone: false,
     },
   },
+  runtimeConfig: {
+    public: {
+      // eslint-disable-next-line node/no-process-env
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:8080",
+    },
+  },
 });
