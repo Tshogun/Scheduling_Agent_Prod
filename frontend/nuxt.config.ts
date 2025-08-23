@@ -25,7 +25,7 @@ export default defineNuxtConfig({
       // eslint-disable-next-line node/no-process-env
       supabaseUrl: process.env.SUPABASE_URL,
       // eslint-disable-next-line node/no-process-env
-      supabaseAnonKey: process.env.SUPABASE_KEY,
+      supabaseKey: process.env.SUPABASE_KEY,
     },
   },
   supabase: {
