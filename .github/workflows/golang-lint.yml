@@ -26,5 +26,5 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.4.0
-          working-directory: backend/servies/go-orchestrator
+          working-directory: backend/services/go-orchestrator
           cache-invalidation-interval: 6

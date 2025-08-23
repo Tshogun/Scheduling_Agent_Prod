@@ -2,16 +2,17 @@ name: Frontend Lint
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [ '**' ]  # Trigger on PRs targeting any branch
+  push:
+    branches: [ '**' ]  # Optional: also run on all pushes (remove if not needed)
 
 jobs:
-   # Build job
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Detect package manager
         id: detect-package-manager
         run: |
@@ -27,19 +28,18 @@ jobs:
             echo "Unable to determine package manager"
             exit 1
           fi
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '22.5.1'
           cache: ${{ steps.detect-package-manager.outputs.manager }}
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
         with:
-          # Automatically inject router.base in your Nuxt configuration file and set
-          # target to static (https://nuxtjs.org/docs/configuration-glossary/configuration-target/).
-          #
-          # You may remove this line if you want to manage the configuration yourself.
           static_site_generator: nuxt
+
       - name: Restore cache
         uses: actions/cache@v4
         with:
@@ -49,10 +49,13 @@ jobs:
           key: ${{ runner.os }}-nuxt-build-${{ hashFiles('dist') }}
           restore-keys: |
             ${{ runner.os }}-nuxt-build-
+
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+
       - name: Static HTML export with Nuxt
         run: ${{ steps.detect-package-manager.outputs.manager }} run generate
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -70,7 +73,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '10.8.3'  
+          node-version: '22.5.1'
 
       - name: Install dependencies
         run: npm ci
