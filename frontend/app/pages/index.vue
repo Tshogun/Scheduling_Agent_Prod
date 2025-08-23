@@ -376,7 +376,6 @@ onMounted(() => {
       </div>
     </div>
   </div>
-<<<<<<< Updated upstream
 </template>
 
 <style scoped>
@@ -404,6 +403,3 @@ onMounted(() => {
   background: #94a3b8;
 }
 </style>
-=======
-</template>
->>>>>>> Stashed changes

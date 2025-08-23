@@ -1,6 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
-import { resolve } from "node:path";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineNuxtConfig({
@@ -12,14 +11,8 @@ export default defineNuxtConfig({
       tsconfigPaths(),
     ],
   },
-  css: [resolve(__dirname, "assets/css/main.css")],
-  modules: [
-    "@nuxt/eslint",
-    "@nuxt/image",
-    "@nuxt/ui",
-    "@nuxt/test-utils",
-    "@nuxtjs/supabase",
-  ],
+  css: ["../assets/css/main.css"],
+  modules: ["@nuxt/eslint", "@nuxt/image", "@nuxt/ui", "@nuxt/test-utils", "@nuxtjs/supabase"],
   eslint: {
     config: {
       standalone: false,
@@ -33,9 +26,9 @@ export default defineNuxtConfig({
   },
   supabase: {
     redirectOptions: {
-      login: '/login', // Where to redirect guest users
-      callback: '/index', // Where to redirect authenticated users
-      exclude: ['/signup'], // Pages that don't require login
-    }
-  }
+      login: "/login", // Where to redirect guest users
+      callback: "/index", // Where to redirect authenticated users
+      exclude: ["/signup"], // Pages that don't require login
+    },
+  },
 });
