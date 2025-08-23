@@ -1,6 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
-import { resolve } from "node:path";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineNuxtConfig({
@@ -12,7 +11,7 @@ export default defineNuxtConfig({
       tsconfigPaths(),
     ],
   },
-  css: [resolve(__dirname, "assets/css/main.css")],
+  css: ["../assets/css/main.css"],
   modules: [
     "@nuxt/eslint",
     "@nuxt/image",
