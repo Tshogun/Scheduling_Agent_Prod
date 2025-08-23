@@ -1,5 +1,16 @@
 // frontend/pages/index.vue
 <script setup>
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+
+import { useApi } from "../composables/use-api";
+
+const router = useRouter();
+
+function goBack() {
+  router.back();
+}
+
 const api = useApi();
 
 // Health check
@@ -129,6 +140,15 @@ onMounted(() => {
 
 <template>
   <div class="container mx-auto p-6">
+    <div class="mb-6">
+      <button
+        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+        @click="goBack"
+      >
+        ← Back
+      </button>
+    </div>
+
     <h1 class="text-3xl font-bold mb-8">
       Local Development Test
     </h1>

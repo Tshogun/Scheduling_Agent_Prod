@@ -6,7 +6,7 @@ trap 'kill 0' EXIT
 
 # Start services in background
 echo "Starting Python service..."
-cd backend/services/python-services && uvicorn main:app --reload --port 8000 &
+cd backend/services/python-services && py -3.13 main.py &
 
 echo "Starting Go service..."
 cd backend/services/go-orchestrator && go run main.go &

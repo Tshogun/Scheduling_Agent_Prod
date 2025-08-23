@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+grpcio
+grpcio-tools
+pika
+ortools
+openai
+python-dotenv
+pydantic
+
+# Development dependencies
+pytest
+pytest-asyncio
+black
+isort
+ruff
