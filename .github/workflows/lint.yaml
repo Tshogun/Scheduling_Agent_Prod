@@ -48,6 +48,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuxt-build-
 
+      - name: Debug working directory and files
+        run: |
+          pwd
+          ls -la frontend
+          ls -la frontend/node_modules || echo "No node_modules yet"
+
       - name: Install dependencies
         working-directory: frontend
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
