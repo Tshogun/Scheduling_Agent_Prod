@@ -401,3 +401,4 @@ shift_id,date,day,time,shift_type,employee_id,employee_name,employee_initials
 400,2025-08-28,Thursday,00:00,Night Shift ,E50,Alex Evans,AE
 401,2025-08-28,Thursday,08:00,Morning Shift ,E01,Alice Smith,AS
 402,2025-08-28,Thursday,16:00,Evening Shift ,E02,Bob Johnson,BJ
+402,2025-08-28,Thursday,16:00,Evening Shift ,E02,Bob Johnson,BJ

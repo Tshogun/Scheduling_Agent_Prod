@@ -1,4 +1,5 @@
 // frontend/composables/useApi.ts
+import { $fetch } from "ohmyfetch";
 
 export function useApi() {
   const config = useRuntimeConfig(); // Nuxt 3 will provide this automatically

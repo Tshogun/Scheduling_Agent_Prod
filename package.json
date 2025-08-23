@@ -1,0 +1,27 @@
+{
+  "name": "your-project",
+  "version": "1.0.0",
+  "description": "Multi-service architecture with Go, Python, and Nuxt",
+  "scripts": {
+    "dev": "docker-compose up --build",
+    "dev:detach": "docker-compose up --build -d",
+    "stop": "docker-compose down",
+    "clean": "docker-compose down -v --rmi all",
+    "logs": "docker-compose logs -f",
+    "logs:go": "docker-compose logs -f go-orchestrator",
+    "logs:python": "docker-compose logs -f python-ai-service",
+    "logs:nuxt": "docker-compose logs -f nuxt-frontend",
+    "proto:generate": "./scripts/generate-proto.sh",
+    "lint": "npm run lint:go && npm run lint:python && npm run lint:nuxt",
+    "lint:go": "cd services/go-orchestrator && golangci-lint run",
+    "lint:python": "cd services/python-ai-service && ruff check . && black --check .",
+    "lint:nuxt": "cd services/nuxt-frontend && npm run lint",
+    "format": "npm run format:go && npm run format:python && npm run format:nuxt",
+    "format:go": "cd services/go-orchestrator && gofmt -s -w . && goimports -w .",
+    "format:python": "cd services/python-ai-service && black . && isort .",
+    "format:nuxt": "cd services/nuxt-frontend && npm run lint:fix && prettier --write ."
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
