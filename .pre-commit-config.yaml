@@ -21,7 +21,7 @@ repos:
     # Ruff version.
     rev: v0.12.10
     hooks:
-      # Run the linter.
+      # Run the linter
       - id: ruff-check
         types_or: [ python, pyi ]
         args: [ --fix ]
