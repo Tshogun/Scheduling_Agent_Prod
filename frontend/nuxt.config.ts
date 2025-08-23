@@ -25,8 +25,6 @@ export default defineNuxtConfig({
       standalone: false,
     },
   },
-<<<<<<< Updated upstream
-=======
   runtimeConfig: {
     public: {
       // eslint-disable-next-line node/no-process-env
@@ -40,5 +38,4 @@ export default defineNuxtConfig({
       exclude: ['/signup'], // Pages that don't require login
     }
   }
->>>>>>> Stashed changes
 });
