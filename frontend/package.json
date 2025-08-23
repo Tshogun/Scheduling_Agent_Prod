@@ -16,6 +16,7 @@
     "@nuxt/image": "^1.11.0",
     "@nuxt/test-utils": "^3.19.2",
     "@nuxt/ui": "^3.3.2",
+    "@nuxtjs/supabase": "^1.6.1",
     "@tailwindcss/vite": "^4.1.12",
     "eslint": "^9.33.0",
     "nuxt": "^4.0.3",
