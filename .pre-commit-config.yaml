@@ -7,3 +7,14 @@ repos:
         language: system
         pass_filenames: false
         files: ^frontend/
+
+repos:
+  - repo: local
+    hooks:
+      - id: golangci-lint
+        name: golangci-lint for go-orchestrator
+        entry: bash -c "cd backend/services/go-orchestrator && golangci-lint run"
+        language: system
+        types: [go]
+        pass_filenames: false
+
