@@ -48,4 +48,5 @@ if not _descriptor._USE_C_DESCRIPTORS:
     _globals["_JOBSTATUSRESPONSE"]._serialized_end = 660
     _globals["_AISERVICE"]._serialized_start = 663
     _globals["_AISERVICE"]._serialized_end = 994
+
 # @@protoc_insertion_point(module_scope)

@@ -30,7 +30,7 @@ func main() {
 	// Initialize server
 	server := &Server{}
 
-	// Connect to Python gRPC service
+  // Connect to Python gRPC service
 	if err := server.connectToPythonService(); err != nil {
 		log.Printf("Warning: Could not connect to Python service: %v", err)
 	}
@@ -59,7 +59,6 @@ func main() {
 
 func (s *Server) connectToPythonService() error {
 	pythonAddr := getEnv("PYTHON_GRPC_ADDR", "localhost:50051")
-
 	conn, err := grpc.NewClient(pythonAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
@@ -77,7 +76,7 @@ func (s *Server) connectToPythonService() error {
 		return err
 	}
 
-	log.Println("Successfully connected to Python gRPC service")
+  log.Println("Successfully connected to Python gRPC service")
 	return nil
 }
 
@@ -92,8 +91,8 @@ func (s *Server) healthCheck(c *gin.Context) {
 	if s.pythonClient != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-
-		_, err := s.pythonClient.Ping(ctx, &pb.PingRequest{Message: "health check"})
+   
+    _, err := s.pythonClient.Ping(ctx, &pb.PingRequest{Message: "health check"})
 		if err != nil {
 			response.Services["python"] = map[string]interface{}{
 				"status": "unhealthy",
@@ -203,7 +202,7 @@ func (s *Server) optimize(c *gin.Context) {
 func (s *Server) getJobStatus(c *gin.Context) {
 	jobID := c.Param("id")
 
-	if s.pythonClient == nil {
+  if s.pythonClient == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Python service not available"})
 		return
 	}

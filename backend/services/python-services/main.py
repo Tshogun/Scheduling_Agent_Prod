@@ -13,7 +13,6 @@ from fastapi import FastAPI
 # Add the local proto folder to sys.path to import generated protobuf classes correctly
 sys.path.append(os.path.join(os.path.dirname(__file__), "proto"))
 
-
 import service_pb2  # type: ignore
 import service_pb2_grpc  # type: ignore
 
@@ -26,7 +25,6 @@ app = FastAPI(title="Python AI Service", version="1.0.0")
 
 # In-memory job storage (use Redis in production)
 job_storage: dict[str, dict] = {}
-
 
 class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
     def __init__(self):
@@ -138,6 +136,7 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
             status=job_info["status"],
             result_json=job_info.get("result_json", ""),
             error_message=job_info.get("error_message", ""),
+
         )
 
     def GetJobStatus(self, request, context):
@@ -182,16 +181,13 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
                 }
             )
 
-
 # Global service instance
 ai_service = AIServiceImplementation()
-
 
 # FastAPI routes (for direct HTTP access)
 @app.get("/")
 async def root():
     return {"message": "Python AI Service", "status": "running"}
-
 
 @app.get("/health")
 async def health_check():
@@ -205,7 +201,6 @@ async def health_check():
         },
     }
 
-
 @app.get("/jobs/{job_id}")
 async def get_job_status_http(job_id: str):
     """HTTP endpoint for job status"""
@@ -213,7 +208,6 @@ async def get_job_status_http(job_id: str):
     if not job_info:
         return {"error": "Job not found"}, 404
     return job_info
-
 
 # gRPC server setup
 async def serve_grpc():
@@ -227,7 +221,6 @@ async def serve_grpc():
     logger.info(f"Starting gRPC server on {listen_addr}")
     await server.start()
     await server.wait_for_termination()
-
 
 # Main async entrypoint to run both FastAPI and gRPC
 async def main():
@@ -246,7 +239,6 @@ async def main():
     api_task = asyncio.create_task(server.serve())
 
     await asyncio.gather(grpc_task, api_task)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
