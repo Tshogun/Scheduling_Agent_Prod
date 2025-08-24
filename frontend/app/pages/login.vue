@@ -15,18 +15,16 @@ async function handleLogin() {
     loading.value = true;
     errorMessage.value = null;
 
-    // Use Supabase's signInWithPassword method
     const { error } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,
     });
 
-    // If there's an error, display it
     if (error)
       throw error;
 
-    // If login is successful, redirect to the scheduling page
-    router.push("/");
+    // ✅ Prevent going back to login by replacing history
+    router.replace("/");
   }
   catch (error) {
     errorMessage.value = error.message;
