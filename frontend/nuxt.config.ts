@@ -22,6 +22,10 @@ export default defineNuxtConfig({
     public: {
       // eslint-disable-next-line node/no-process-env
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:8080",
+      // eslint-disable-next-line node/no-process-env
+      supabaseUrl: process.env.SUPABASE_URL,
+      // eslint-disable-next-line node/no-process-env
+      supabaseKey: process.env.SUPABASE_KEY,
       supabase: { // eslint-disable-next-line node/no-process-env
         url: process.env.SUPABASE_URL,
         // eslint-disable-next-line node/no-process-env
