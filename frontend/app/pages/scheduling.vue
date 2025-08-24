@@ -57,7 +57,6 @@ async function loadCsvData() {
   }
 }
 
-// All your helper functions (uniqueDates, getEmployeeShift, etc.) remain exactly the same.
 const uniqueDates = computed(() => {
   const dates = [...new Set(csvData.value.map(row => row.date))];
   return dates.sort();
@@ -75,6 +74,7 @@ const uniqueEmployees = computed(() => {
   });
   return Array.from(employeeMap.values());
 });
+
 function getEmployeeShift(employeeId, date) {
   return csvData.value.find(row => row.employee_id === employeeId && row.date === date);
 }
@@ -138,7 +138,6 @@ function formatDay(dateStr) {
     return date.toLocaleDateString("en-US", { weekday: "long" });
   } catch { return ""; }
 }
-
 onMounted(() => {
   loadCsvData();
 });
@@ -237,6 +236,7 @@ onMounted(() => {
          - @close="isChatOpen = false" listens for the close event from the panel and updates our variable.
     -->
     <ChatPanel :isOpen="isChatOpen" @close="isChatOpen = false" />
+
   </div>
 </template>
 
@@ -257,4 +257,3 @@ onMounted(() => {
   background: #94a3b8;
 }
 </style>
-

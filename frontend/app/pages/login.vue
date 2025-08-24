@@ -14,7 +14,6 @@ async function handleLogin() {
   try {
     loading.value = true;
     errorMessage.value = null;
-
     const { error } = await supabase.auth.signInWithPassword({
       email: email.value,
       password: password.value,

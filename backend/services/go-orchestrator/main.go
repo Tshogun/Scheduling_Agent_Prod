@@ -1,4 +1,3 @@
-// backend/services/go-orchestrator/main.go
 package main
 
 import (
@@ -24,14 +23,14 @@ type Server struct {
 type HealthResponse struct {
 	Status    string                 `json:"status"`
 	Services  map[string]interface{} `json:"services"`
-	Timestamp time.Time             `json:"timestamp"`
+	Timestamp time.Time              `json:"timestamp"`
 }
 
 func main() {
 	// Initialize server
 	server := &Server{}
-	
-	// Connect to Python gRPC service
+
+  // Connect to Python gRPC service
 	if err := server.connectToPythonService(); err != nil {
 		log.Printf("Warning: Could not connect to Python service: %v", err)
 	}
@@ -42,7 +41,7 @@ func main() {
 
 	// Health check endpoint
 	r.GET("/health", server.healthCheck)
-	
+
 	// API routes
 	api := r.Group("/api/v1")
 	{
@@ -60,25 +59,24 @@ func main() {
 
 func (s *Server) connectToPythonService() error {
 	pythonAddr := getEnv("PYTHON_GRPC_ADDR", "localhost:50051")
-	
-	conn, err := grpc.Dial(pythonAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(pythonAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return err
 	}
-	
+
 	s.grpcConn = conn
 	s.pythonClient = pb.NewAIServiceClient(conn)
-	
+
 	// Test connection
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	_, err = s.pythonClient.Ping(ctx, &pb.PingRequest{Message: "connection test"})
 	if err != nil {
 		return err
 	}
-	
-	log.Println("Successfully connected to Python gRPC service")
+
+  log.Println("Successfully connected to Python gRPC service")
 	return nil
 }
 
@@ -93,8 +91,8 @@ func (s *Server) healthCheck(c *gin.Context) {
 	if s.pythonClient != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 		defer cancel()
-		
-		_, err := s.pythonClient.Ping(ctx, &pb.PingRequest{Message: "health check"})
+   
+    _, err := s.pythonClient.Ping(ctx, &pb.PingRequest{Message: "health check"})
 		if err != nil {
 			response.Services["python"] = map[string]interface{}{
 				"status": "unhealthy",
@@ -203,8 +201,8 @@ func (s *Server) optimize(c *gin.Context) {
 
 func (s *Server) getJobStatus(c *gin.Context) {
 	jobID := c.Param("id")
-	
-	if s.pythonClient == nil {
+
+  if s.pythonClient == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Python service not available"})
 		return
 	}
