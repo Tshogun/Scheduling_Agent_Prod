@@ -26,14 +26,13 @@ export default defineNuxtConfig({
       supabaseUrl: process.env.SUPABASE_URL,
       // eslint-disable-next-line node/no-process-env
       supabaseKey: process.env.SUPABASE_KEY,
-      supabase: { // eslint-disable-next-line node/no-process-env
-        url: process.env.SUPABASE_URL,
-        // eslint-disable-next-line node/no-process-env
-        key: process.env.SUPABASE_KEY,
-      },
     },
   },
   supabase: {
+    // eslint-disable-next-line node/no-process-env
+    url: process.env.SUPABASE_URL,
+    // eslint-disable-next-line node/no-process-env
+    key: process.env.SUPABASE_KEY,
     redirectOptions: {
       login: "/login", // Where to redirect guest users
       callback: "/index", // Where to redirect authenticated users
