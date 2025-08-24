@@ -9,7 +9,7 @@
         Sign Up
       </h1>
       <p class="text-gray-500 mt-4">
-        The sign-up page is under construction.
+        The sign-up page is currently under construction.
       </p>
       <div class="mt-8">
         <NuxtLink to="/" class="font-medium text-purple-600 hover:text-purple-500">
