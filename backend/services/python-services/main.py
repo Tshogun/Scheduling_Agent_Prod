@@ -1,3 +1,4 @@
+# main.py
 import asyncio
 import json
 import logging
@@ -10,11 +11,16 @@ import grpc
 import pika
 from fastapi import FastAPI
 
-# Add the local proto folder to sys.path to import generated protobuf classes correctly
+# Add local proto folder to sys.path
 sys.path.append(os.path.join(os.path.dirname(__file__), "proto"))
-
 import service_pb2  # type: ignore
 import service_pb2_grpc  # type: ignore
+from dotenv import load_dotenv
+
+from groq_services import GroqService  # ✅ Groq integration
+
+load_dotenv()
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,10 +32,24 @@ app = FastAPI(title="Python AI Service", version="1.0.0")
 # In-memory job storage (use Redis in production)
 job_storage: dict[str, dict] = {}
 
+
 class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
     def __init__(self):
         self.rabbitmq_connection = None
         self.rabbitmq_channel = None
+        self.groq_service = None
+        self._setup_services()
+
+    def _setup_services(self):
+        """Initialize external services"""
+        # Setup Groq
+        try:
+            self.groq_service = GroqService()
+            logger.info("GroqService initialized")
+        except Exception as e:
+            logger.error(f"Failed to initialize GroqService: {e}")
+
+        # Setup RabbitMQ
         self._setup_rabbitmq()
 
     def _setup_rabbitmq(self):
@@ -40,8 +60,6 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
             )
             connection = pika.BlockingConnection(pika.URLParameters(rabbitmq_url))
             channel = connection.channel()
-
-            # Declare queues
             channel.queue_declare(queue="optimization_tasks", durable=True)
             channel.queue_declare(queue="optimization_results", durable=True)
 
@@ -58,24 +76,48 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
             message=f"Pong: {request.message}", timestamp=int(time.time())
         )
 
-    def GetCompletion(self, request, context):
-        """Mock LLM completion (replace with actual OpenAI call)"""
-        logger.info(f"Completion request: {request.prompt[:50]}...")
+    async def _handle_completion(self, prompt: str, model: str, max_tokens: int):
+        """Async Groq completion logic"""
+        try:
+            result = await self.groq_service.get_completion(
+                prompt=prompt,
+                model=model if model else None,
+                max_tokens=max_tokens if max_tokens > 0 else None,
+            )
+            return result
+        except Exception as e:
+            logger.error(f"GroqService error: {e}")
+            return {"error": str(e)}
 
-        # Mock response (replace with actual LLM call)
-        mock_completion = f"This is a mock response to: {request.prompt[:30]}..."
+    def GetCompletion(self, request, context):
+        """Handle LLM completion using Groq"""
+        if not self.groq_service:
+            context.set_code(grpc.StatusCode.UNAVAILABLE)
+            context.set_details("GroqService not initialized")
+            return service_pb2.CompletionResponse()
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(
+            self._handle_completion(request.prompt, request.model, request.max_tokens)
+        )
+        loop.close()
+
+        if "error" in result:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(result["error"])
+            return service_pb2.CompletionResponse()
 
         return service_pb2.CompletionResponse(
-            completion=mock_completion,
-            tokens_used=len(mock_completion.split()),
-            model=request.model or "mock-model",
+            completion=result["completion"],
+            tokens_used=result["tokens_used"],
+            model=result["model"],
         )
 
     def SolveOptimization(self, request, context):
         """Queue optimization task"""
         job_id = str(uuid.uuid4())
 
-        # Store job info
         job_info = {
             "job_id": job_id,
             "status": "queued",
@@ -90,7 +132,6 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
         }
         job_storage[job_id] = job_info
 
-        # Queue the task (if RabbitMQ is available)
         if self.rabbitmq_channel:
             try:
                 message = json.dumps(
@@ -107,13 +148,9 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
                     exchange="",
                     routing_key="optimization_tasks",
                     body=message,
-                    properties=pika.BasicProperties(
-                        delivery_mode=2
-                    ),  # Make message persistent
+                    properties=pika.BasicProperties(delivery_mode=2),
                 )
                 logger.info(f"Queued optimization job: {job_id}")
-
-                # Start async processing (mock)
                 asyncio.create_task(self._process_optimization_mock(job_id))
 
             except Exception as e:
@@ -121,7 +158,6 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
                 job_info["status"] = "failed"
                 job_info["error_message"] = str(e)
         else:
-            # Process synchronously if no RabbitMQ
             result = self._solve_optimization_mock(request)
             job_info.update(
                 {
@@ -136,18 +172,15 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
             status=job_info["status"],
             result_json=job_info.get("result_json", ""),
             error_message=job_info.get("error_message", ""),
-
         )
 
     def GetJobStatus(self, request, context):
-        """Get job status"""
+        """Check status of an optimization job"""
         job_info = job_storage.get(request.job_id)
-
         if not job_info:
             return service_pb2.JobStatusResponse(
                 job_id=request.job_id, status="not_found", error_message="Job not found"
             )
-
         return service_pb2.JobStatusResponse(
             job_id=job_info["job_id"],
             status=job_info["status"],
@@ -158,8 +191,7 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
         )
 
     def _solve_optimization_mock(self, request):
-        """Mock optimization solver"""
-        # Replace with actual OR-Tools implementation
+        """Mock solver"""
         result = {
             "solution": "mock_solution",
             "objective_value": 42.0,
@@ -169,9 +201,8 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
         return json.dumps(result)
 
     async def _process_optimization_mock(self, job_id: str):
-        """Mock async optimization processing"""
-        await asyncio.sleep(2)  # Simulate processing time
-
+        """Async mock processing"""
+        await asyncio.sleep(2)
         if job_id in job_storage:
             job_storage[job_id].update(
                 {
@@ -181,13 +212,16 @@ class AIServiceImplementation(service_pb2_grpc.AIServiceServicer):
                 }
             )
 
+
 # Global service instance
 ai_service = AIServiceImplementation()
 
-# FastAPI routes (for direct HTTP access)
+
+# FastAPI routes
 @app.get("/")
 async def root():
     return {"message": "Python AI Service", "status": "running"}
+
 
 @app.get("/health")
 async def health_check():
@@ -201,13 +235,14 @@ async def health_check():
         },
     }
 
+
 @app.get("/jobs/{job_id}")
 async def get_job_status_http(job_id: str):
-    """HTTP endpoint for job status"""
     job_info = job_storage.get(job_id)
     if not job_info:
         return {"error": "Job not found"}, 404
     return job_info
+
 
 # gRPC server setup
 async def serve_grpc():
@@ -222,7 +257,8 @@ async def serve_grpc():
     await server.start()
     await server.wait_for_termination()
 
-# Main async entrypoint to run both FastAPI and gRPC
+
+# Main entrypoint to run both FastAPI and gRPC
 async def main():
     import uvicorn
 
@@ -239,6 +275,7 @@ async def main():
     api_task = asyncio.create_task(server.serve())
 
     await asyncio.gather(grpc_task, api_task)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

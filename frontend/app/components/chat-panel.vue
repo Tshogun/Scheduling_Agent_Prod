@@ -1,7 +1,9 @@
 <script setup>
 import { onUnmounted, ref } from "vue";
 
-// Props to control visibility from the parent
+import { useApi } from "../../composables/use-api"; // Adjust path if needed
+
+// Props from parent
 // eslint-disable-next-line unused-imports/no-unused-vars
 const props = defineProps({
   isOpen: {
@@ -10,30 +12,34 @@ const props = defineProps({
   },
 });
 
-// Emits to communicate back to the parent
 const emit = defineEmits(["close"]);
 
-// --- State Management ---
-const chatWidth = ref(450); // Initial width of the chat panel in pixels
+// State
+const chatWidth = ref(450);
 const isResizing = ref(false);
 const messages = ref([
-  { id: 1, sender: "ai", text: "Hello! How can I help you with the schedule today?" },
+  {
+    id: 1,
+    sender: "ai",
+    text: "Hello! How can I help you with the schedule today?",
+  },
 ]);
 const newMessage = ref("");
+const isThinking = ref(false);
 
-// --- Resizing Logic ---
+// API instance
+const { getCompletion } = useApi();
+
+// Resizing handlers
 function handleMouseDown(_event) {
   isResizing.value = true;
-  // Add listeners to the whole window to track mouse movement everywhere
   window.addEventListener("mousemove", handleMouseMove);
   window.addEventListener("mouseup", handleMouseUp);
 }
 
 function handleMouseMove(event) {
   if (isResizing.value) {
-    // Calculate new width based on mouse position from the right edge of the screen
     const newWidth = window.innerWidth - event.clientX;
-    // Set boundaries for resizing
     if (newWidth > 300 && newWidth < 800) {
       chatWidth.value = newWidth;
     }
@@ -42,22 +48,51 @@ function handleMouseMove(event) {
 
 function handleMouseUp() {
   isResizing.value = false;
-  // IMPORTANT: Clean up the window event listeners
   window.removeEventListener("mousemove", handleMouseMove);
   window.removeEventListener("mouseup", handleMouseUp);
 }
 
-// --- Chat Logic ---
-function sendMessage() {
-  if (newMessage.value.trim() === "")
+// 🧠 Chat send handler
+async function sendMessage() {
+  const input = newMessage.value.trim();
+  if (!input)
     return;
-  // Add user message to the chat
-  messages.value.push({ id: Date.now(), sender: "user", text: newMessage.value });
+
+  const userMsg = {
+    id: Date.now(),
+    sender: "user",
+    text: input,
+  };
+
+  messages.value.push(userMsg);
   newMessage.value = "";
-  // Here, your friend will later add the logic to send the message to an LLM
+  isThinking.value = true;
+
+  try {
+    const res = await getCompletion({
+      prompt: input,
+      // Optionally: model: "llama3-8b-8192", max_tokens: 300
+    });
+
+    messages.value.push({
+      id: Date.now() + 1,
+      sender: "ai",
+      text: res.completion,
+    });
+  }
+  catch (error) {
+    console.error("AI error:", error);
+    messages.value.push({
+      id: Date.now() + 1,
+      sender: "ai",
+      text: "Sorry, something went wrong while generating a response.",
+    });
+  }
+  finally {
+    isThinking.value = false;
+  }
 }
 
-// Clean up listeners when the component is removed from the page
 onUnmounted(() => {
   window.removeEventListener("mousemove", handleMouseMove);
   window.removeEventListener("mouseup", handleMouseUp);

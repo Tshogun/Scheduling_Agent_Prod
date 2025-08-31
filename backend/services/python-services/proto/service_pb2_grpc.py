@@ -10,6 +10,7 @@ _version_not_supported = False
 
 try:
     from grpc._utilities import first_version_is_lower
+
     _version_not_supported = first_version_is_lower(
         GRPC_VERSION, GRPC_GENERATED_VERSION
     )
@@ -88,9 +89,9 @@ class AIServiceServicer:
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+
 def add_AIServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-
         "Ping": grpc.unary_unary_rpc_method_handler(
             servicer.Ping,
             request_deserializer=service__pb2.PingRequest.FromString,
